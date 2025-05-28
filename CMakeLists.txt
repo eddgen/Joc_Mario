@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(2D_Platformer)
+project(Joc_Mario)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -13,7 +13,7 @@ find_package(SFML 2.6 COMPONENTS graphics window system REQUIRED)
 add_subdirectory(box2d)
 
 # Add source files
-add_executable(2D_Platformer
+add_executable(Joc_Mario
         main.cpp
         Game.cpp
         Game.h
@@ -41,10 +41,10 @@ add_executable(2D_Platformer
 )
 
 # Link SFML and Box2D
-target_link_libraries(2D_Platformer PRIVATE sfml-graphics sfml-window sfml-system sfml-audio box2d)
+target_link_libraries(Joc_Mario PRIVATE sfml-graphics sfml-window sfml-system sfml-audio box2d)
 
 # Include Box2D headers
-target_include_directories(2D_Platformer PRIVATE
+target_include_directories(Joc_Mario PRIVATE
         ${CMAKE_SOURCE_DIR}/box2d/include
 )
 
