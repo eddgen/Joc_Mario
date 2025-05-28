@@ -1,33 +1,24 @@
-//
-// Created by Edy on 26/05/2025.
-//
-
 #ifndef ANIMATION_H
 #define ANIMATION_H
-#include <vector>
 #include <SFML/Graphics/Texture.hpp>
-
-struct AnimFrame {
-    AnimFrame(float time=0.0f, sf::Texture texture=sf::Texture())
-        :time(time), texture(texture) {}
-
-    float time;
-    sf::Texture texture{};
-};
+#include <SFML/System/Vector2.hpp>
 
 class Animation {
+public:
+    Animation(sf::Texture* texture, float imageCountx, float switchTime);
+    ~Animation();
+    void Reconstruct(int whichTexture, sf::Texture* texture, float imageCountx, float switchTime);
+    void Update(float deltaTime);
+    bool IsCycleComplete() const; // Add this method
 
 public:
-    Animation(float lenght=0.0f, std::vector<AnimFrame> frames={});
-    void Update(float deltaTime);
+    sf::IntRect frameRect;
+    float switchTime;
+    float imageCountx;
 
-    sf::Texture GetTexture();
 private:
-    float time= 0.0f;
-    float lenght;
-    std::vector<AnimFrame> frames;
+    sf::Vector2u currentImage;
+    float totalTime;
 };
-
-
 
 #endif //ANIMATION_H

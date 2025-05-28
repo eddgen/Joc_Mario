@@ -31,12 +31,17 @@ add_executable(2D_Platformer
         Physics.h
         Animation.cpp
         Animation.h
-        AnimationIdle.cpp
-        AnimationIdle.h
+        AnimationV2.cpp
+        AnimationV2.h
+        object.h
+        Coin.cpp
+        Coin.h
+        Enemy.cpp
+        Enemy.h
 )
 
 # Link SFML and Box2D
-target_link_libraries(2D_Platformer PRIVATE sfml-graphics sfml-window sfml-system box2d)
+target_link_libraries(2D_Platformer PRIVATE sfml-graphics sfml-window sfml-system sfml-audio box2d)
 
 # Include Box2D headers
 target_include_directories(2D_Platformer PRIVATE

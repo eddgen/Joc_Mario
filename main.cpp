@@ -28,15 +28,20 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) // close the window when pressing esc
-                window.close(); // adauga window de confirmare
+                //window.close(); // adauga window de confirmare
+                paused=!paused;
         }
 
-        window.setView(camera.GetView(window.getSize()));
         Update(deltaTime);
 
+        window.clear();
 
-        window.clear(sf::Color::Cyan); // Ocean-like background
+        window.setView(camera.GetView(window.getSize()));
         Render(renderer);
+
+        window.setView(camera.GetUIView());
+        RenderUI(renderer);
+
         window.display();
 
     }

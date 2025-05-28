@@ -9,6 +9,10 @@
 #include "Resources.h"
 #include "box2d/b2_body.h"
 #include <box2d/b2_polygon_shape.h>
+#include <box2d/b2_fixture.h>
+#include "Object.h"
+#include "Coin.h"
+#include "Enemy.h"
 
 Map::Map(float cellSize)
     :cellSize(cellSize), grid()
@@ -17,24 +21,27 @@ Map::Map(float cellSize)
 
 // void Map::CreateCheckerboard(size_t width, size_t height) {
 //
-//     grid = std::vector(width,std::vector(height, 0));
+//     grid = std::vector(width,std::vector(height, (sf::Texture*)nullptr));
 //
 //     bool last=0; //stores last value to make chekerborad
 //     for (auto& column : grid) {
 //
 //         for (auto& cell : column) {
 //
-//             last= cell =!last;
+//             last=!last;
+//              if(last)
+//                  cell= &Resources::textures[gray_brick.png];
 //         }
 //         if (width%2==0)
 //             last=!last;
 //     }
 //}
 
-sf::Vector2f Map::CreateFromImage(const sf::Image &image) {
+sf::Vector2f Map::CreateFromImage(const sf::Image &image, std::vector<Object*> &objects) {
 
+    objects.clear();
     grid.clear();
-    grid=std::vector(image.getSize().x, std::vector(image.getSize().y,0));
+    grid=std::vector(image.getSize().x, std::vector(image.getSize().y,(sf::Texture*)nullptr));
 
     sf::Vector2f playerPosition{};
 
@@ -42,20 +49,47 @@ sf::Vector2f Map::CreateFromImage(const sf::Image &image) {
         for (size_t y=0; y<grid[x].size(); y++) {
 
             sf::Color color =image.getPixel(x,y);
-            if (color==sf::Color::Black)
-            {
-                grid[x][y]=1;
+            Object* object = nullptr;
+
+            if (color==sf::Color::Red) {
+                playerPosition= sf::Vector2f(cellSize * x + cellSize/2.0f,
+                    cellSize * y + cellSize/2.0f);
+                continue;
+            }
+            else if (color==sf::Color::Black) {
+                grid[x][y]= &Resources::textures["gray_brick.png"];
+            }
+            else if (color==sf::Color::Green) {
+                grid[x][y]= &Resources::textures["rock.png"];
+            }
+            else if (color==sf::Color::Yellow) {
+                object= new Coin();
+            }
+            else if (color==sf::Color::Blue) {
+                object= new Enemy();
+            }
+            if (object) {
+                object->position =sf::Vector2f(cellSize * x + cellSize/2.0f,cellSize * y + cellSize/2.0f);
+                objects.push_back(object);
+            }
+            else if (grid[x][y]) {
                 b2BodyDef bodyDef{};
                 bodyDef.position.Set(cellSize * x + cellSize/2.0f,
                     cellSize * y + cellSize/2.0f);
-                b2Body* body = Physics::world.CreateBody(&bodyDef);
+                b2Body* body = Physics::world->CreateBody(&bodyDef);
                 b2PolygonShape shape{};
                 shape.SetAsBox(cellSize/2.0f, cellSize/2.0f);
-                body ->CreateFixture(&shape, 0.0f);
-            }
-            else if (color==sf::Color::Red) {
-                playerPosition= sf::Vector2f(cellSize * x + cellSize/2.0f,
-                    cellSize * y + cellSize/2.0f);
+
+                FixtureData* fixtureData = new FixtureData();
+                fixtureData->type=FixtureDataType::MapTile;
+                fixtureData->mapX=x;
+                fixtureData->mapY=y;
+
+                b2FixtureDef fixtureDef{};
+                fixtureDef.shape=&shape;
+                fixtureDef.userData.pointer=(uintptr_t)fixtureData;
+                fixtureDef.density = 0.0f;
+                body ->CreateFixture(&fixtureDef);
             }
         }
     }
@@ -70,7 +104,7 @@ void Map::Draw(Renderer& renderer) {
         int y=0;
         for (const auto& cell : column) {
             if (cell) {
-                renderer.Draw(Resources::textures["gray_brick_resized.png"],
+                renderer.Draw(*cell,
                 sf::Vector2f(cellSize * x + cellSize/2.0f,
                     cellSize * y + cellSize/2.0f),
                 sf::Vector2f(cellSize,cellSize));

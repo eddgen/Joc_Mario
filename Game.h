@@ -1,26 +1,20 @@
-//
-// Created by Edy on 23/05/2025.
-//
-
 #ifndef GAME_H
 #define GAME_H
 #include <SFML/Graphics/RenderWindow.hpp>
-
-#include <iostream>
+#include <vector>
 #include "Camera.h"
+#include "Object.h"
 #include "Renderer.h"
 
-
-extern Camera camera; //defineste obiect de tip camera undeva in program nu doar in fisierul acesta, si te lasa sa il folosesti in mai multe fisiere
+extern Camera camera;
+extern bool paused;
+extern std::vector<Object*> objectsToDelete; // Add this to track objects for deletion
 
 void Begin(const sf::Window& window);
-
 void Update(float deltaTime);
-
 void Render(Renderer& render);
-
-
-
-
+void RenderUI(Renderer& renderer);
+void DeleteObject(Object* object);
+void ProcessPendingDeletions(); // New function to process deletions
 
 #endif //GAME_H

@@ -6,3 +6,4 @@
 #include <iostream>
 
 std::unordered_map<std::string, sf::Texture> Resources::textures = {}; // am definit texturile
+std::unordered_map<std::string, sf::SoundBuffer> Resources::sounds{};
